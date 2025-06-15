@@ -14,10 +14,10 @@ export class CadastroPessoas extends cds.ApplicationService {
 
     this.prepend(() => {
       //garantindo que vai rodar antes de qualquer outro before na entidade Pessoas
-      this.before("CREATE", Pessoas, this.validarDados);
+      this.before(["CREATE", "UPDATE"], Pessoas, this.validarDados);
     });
 
-    this.before("CREATE", Pessoas, async (req) => {
+    this.before(["CREATE", "UPDATE"], Pessoas, async (req) => {
       return await this.consultarApiCep(req, BrasilAPI);
     });
 
@@ -75,39 +75,40 @@ export class CadastroPessoas extends cds.ApplicationService {
     const { enderecos } = req.data;
 
     if (!enderecos) {
+      INFO(`Nenhum endereço fornecido na requisição`);
       return;
     }
 
-    try {
-      for (let i = 0; i < enderecos.length; i++) {
-        const cep = enderecos[i].CEP; // Captura o cep do item
+    for (let i = 0; i < enderecos.length; i++) {
+      const cep = enderecos[i].CEP; // Captura o cep do item
 
-        INFO(`Consultando CEP: ${cep}`);
+      INFO(`Consultando CEP: ${cep}`);
 
+      try {
         const {
-          state: estado,
+          state: uf,
           city: cidade,
           street: rua,
         } = await BrasilAPI.get(`/cep/v1/${cep}`);
 
         INFO(
-          `Dados do CEP ${cep} obtidos com sucesso: Estado: ${estado}, Cidade: ${cidade}, Rua: ${rua}`
+          `Dados do CEP ${cep} obtidos com sucesso: Estado: ${uf}, Cidade: ${cidade}, Rua: ${rua}`
         );
 
         enderecos[i] = {
           ...enderecos[i],
-          estado,
+          uf,
           cidade,
           rua,
         };
+      } catch (error) {
+        ERROR(`Erro ao consultar CEP ${cep}: ${error.message}`);
+        ERROR(error);
+        req.reject(
+          error.statusCode || 500,
+          error.message || cds.i18n.messages.at("ERROR_API_CEP", req.locale)
+        );
       }
-    } catch (error) {
-      ERROR(`Erro ao consultar CEP ${cep}: ${error.message}`);
-      ERROR(error);
-      req.reject(
-        error.statusCode || 500,
-        error.message || cds.i18n.messages.at("ERROR_API_CEP", req.locale)
-      );
     }
   }
 
@@ -124,11 +125,11 @@ export class CadastroPessoas extends cds.ApplicationService {
 
     INFO(`Validando dados de entrada`);
 
-    if (idade < 16) {
+    if (idade && idade < 16) {
       req.error(400, cds.i18n.messages.at("ERROR_WRONG_YEAR", req.locale));
     }
 
-    if (!this.validarCPF(cpf)) {
+    if (cpf && !this.validarCPF(cpf)) {
       req.error(400, cds.i18n.messages.at("ERROR_WRONG_CPF", req.locale));
     }
   }

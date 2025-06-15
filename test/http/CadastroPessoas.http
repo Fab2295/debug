@@ -16,9 +16,29 @@ Content-Type: application/json
 Authorization: Basic {{username}}:{{password}}
 
 {
-  "cpf": "85401416040",
-  "nome": "Teste 2",
-  "idade": 17
+  "cpf": "61415956006",
+  "nome": "Teste 3",
+  "idade": 17,
+  "enderecos": [
+    {
+      "CEP": "46690970"
+    }
+  ]
+}
+
+### Pessoas
+# @name Pessoas_PATCH
+PATCH {{server}}/odata/v4/CadastroPessoas/Pessoas(cpf='85401416040')
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "idade": 18,
+  "enderecos": [
+    {
+      "CEP": "46690970"
+    }
+  ]
 }
 
 

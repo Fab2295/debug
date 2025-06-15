@@ -36,3 +36,6 @@ mta_archives/
 *.env
 
 .vscode/
+
+*-shm
+*-wal
