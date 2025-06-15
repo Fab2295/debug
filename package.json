@@ -1,0 +1,62 @@
+{
+  "name": "debug",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "debug",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@sap-cloud-sdk/http-client": "^4.0.2",
+    "@sap-cloud-sdk/resilience": "^4.0.2",
+    "@sap/cds": "^8",
+    "express": "^4"
+  },
+  "devDependencies": {
+    "@cap-js/cds-types": "^0.10.0",
+    "@cap-js/sqlite": "^1.11.0",
+    "@sap/cds-dk": "^8"
+  },
+  "scripts": {
+    "start": "cds-serve"
+  },
+  "cds": {
+    "i18n": {
+      "default": "pt"
+    },
+    "server": {
+      "shutdown_on_uncaught_errors": false,
+      "index": true
+    },
+    "requires": {
+      "[production]": {
+        "auth": {
+          "kind": "mocked",
+          "users": {
+            "Admin": {}
+          }
+        }
+      },
+      "[development]": {
+        "db": {
+          "kind": "sqlite",
+          "credentials": {
+            "url": "sqlite.db"
+          }
+        }
+      },
+      "Brasil.API": {
+        "kind": "rest",
+        "model": "srv/external/openapi",
+        "credentials": {
+          "[development]": {
+            "url": "https://brasilapi.com.br/api/"
+          },
+          "[production]": {
+            "destination": "BrasilAPI"
+          }
+        }
+      }
+    }
+  }
+}

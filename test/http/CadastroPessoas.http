@@ -1,0 +1,55 @@
+@server=http://localhost:4004
+@username=alice
+@password=
+
+
+### Pessoas
+# @name Pessoas_GET
+GET {{server}}/odata/v4/CadastroPessoas/Pessoas
+Authorization: Basic {{username}}:{{password}}
+
+
+### Pessoas
+# @name Pessoas_POST
+POST {{server}}/odata/v4/CadastroPessoas/Pessoas
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "cpf": "85401416040",
+  "nome": "Teste 2",
+  "idade": 17
+}
+
+
+### Pessoas
+# @name Pessoas_DELETE
+DELETE {{server}}/odata/v4/CadastroPessoas/Pessoas/53712081006
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+
+### HasAddress
+# @name Enderecos_GET
+GET {{server}}/odata/v4/CadastroPessoas/Pessoas('53712081006')/hasAddress()
+Authorization: Basic {{username}}:{{password}}
+
+
+### HasAddress
+# @name deletarCadastrosBatch
+POST {{server}}/odata/v4/CadastroPessoas/bulkDeleteClients
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "cpfs": [
+    "53712081006",
+    "25116244008",
+    "91123947007"
+  ]
+}
+
+### HasAddress
+# @name Enderecos_GET
+GET {{server}}/odata/v4/CadastroPessoas/getClientsByAge(idade=19)
+Authorization: Basic {{username}}:{{password}}

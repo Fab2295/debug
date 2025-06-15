@@ -1,0 +1,1766 @@
+{
+ "definitions": {
+  "Brasil.API": {
+   "kind": "service",
+   "@Capabilities.BatchSupported": false,
+   "@Capabilities.KeyAsSegmentSupported": true,
+   "@Core.Description": "Brasil API",
+   "@Core.SchemaVersion": "1.0.0",
+   "@Core.LongDescription": "Acesso programático de informações é algo fundamental na comunicação entre sistemas, mas, para nossa surpresa, uma informação tão útil e pública quanto um CEP não consegue ser acessada diretamente por um navegador por conta da API dos Correios não possuir CORS habilitado.\nDado a isso, este projeto experimental tem como objetivo centralizar e disponibilizar endpoints modernos com baixíssima latência utilizando tecnologias como Vercel Smart CDN responsável por fazer o cache das informações em atualmente 23 regiões distribuídas ao longo do mundo (incluindo Brasil). Então não importa o quão devagar for a fonte dos dados, nós queremos disponibilizá-la da forma mais rápida e moderna possível.\n\nRecursos disponíveis\n  - CEP\n  - DDD\n  - Bank\n  - CNPJ\n  - IBGE\n  - Feriados Nacionais\n  - Tabela FIPE\n  - ISBN\n  - Registros de domínio br\n  - Taxas"
+  },
+  "Brasil.API.banks_v1": {
+   "kind": "function",
+   "params": {},
+   "@Common.Label": "BANKS",
+   "@Core.Description": "Retorna informações de todos os bancos do Brasil",
+   "@openapi.path": "/banks/v1",
+   "returns": {
+    "items": {
+     "type": "Brasil.API_types.Bank"
+    }
+   }
+  },
+  "Brasil.API.banks_v1_": {
+   "kind": "function",
+   "params": {
+    "code": {
+     "type": "cds.Integer",
+     "@description": "O código do banco<br />**Pode ser obtido <a href=\"#tag/BANKS/paths/~1banks~1v1/get\">nesse</a> endpoint**",
+     "@openapi.in": "path"
+    }
+   },
+   "@Common.Label": "BANKS",
+   "@Core.Description": "Busca as informações de um banco a partir de um código",
+   "@openapi.path": "/banks/v1/{code}",
+   "returns": {
+    "type": "Brasil.API_types.Bank"
+   }
+  },
+  "Brasil.API.cambio_v1_moedas": {
+   "kind": "function",
+   "params": {},
+   "@Common.Label": "CAMBIO",
+   "@Core.Description": "Retorna a lista de moedas que podem ser usadas como parâmetros para este conjunto de dados.",
+   "@openapi.path": "/cambio/v1/moedas",
+   "returns": {
+    "items": {
+     "type": "Brasil.API_types.Moedas"
+    }
+   }
+  },
+  "Brasil.API.cambio_v1_cotacao__": {
+   "kind": "function",
+   "params": {
+    "moeda": {
+     "type": "cds.String",
+     "@description": "A moeda alvo desejada (AUD, CAD, CHF, DKK, EUR, GBP, JPY, SEK, USD). Para maiores informações, consulte: /cambio/v1/moedas",
+     "@openapi.in": "path"
+    },
+    "data": {
+     "type": "cds.String",
+     "@description": "A data desejada, o formato deve ser: YYYY-MM-DD. Os dados só estão disponíveis a partir de 28/11/1984.",
+     "@openapi.in": "path"
+    }
+   },
+   "@Common.Label": "CAMBIO",
+   "@Core.Description": "Busca pelo câmbio do Real com outra moeda, em uma data específica",
+   "@Core.LongDescription": "Consulta o câmbio da moeda desejada em relação ao Real, em uma data específica. **OBS: Para finais de semana e feriados, a data retornada será o último dia útil disponível.**",
+   "@openapi.path": "/cambio/v1/cotacao/{moeda}/{data}",
+   "returns": {
+    "type": "Brasil.API_types.CambioRetorno"
+   }
+  },
+  "Brasil.API.cep_v1_": {
+   "kind": "function",
+   "params": {
+    "cep": {
+     "type": "cds.Integer64",
+     "@description": "O CEP (Código de Endereçamento Postal) é um sistema de códigos que visa racionalizar o processo de encaminhamento e entrega de correspondências através da divisão do país em regiões postais. ... Atualmente, o CEP é composto por oito dígitos, cinco de um lado e três de outro. Cada algarismo do CEP possui um significado.\n",
+     "@openapi.in": "path"
+    }
+   },
+   "@Common.Label": "CEP",
+   "@Core.Description": "Busca por CEP com múltiplos providers de fallback.",
+   "@Core.LongDescription": "A busca utiliza como fonte principal o OpenCep, caso não encontre o CEP é buscado em diversos outros providers de CEP.",
+   "@openapi.path": "/cep/v1/{cep}",
+   "returns": {
+    "type": "Brasil.API_types.Address"
+   }
+  },
+  "Brasil.API.cep_v2_": {
+   "kind": "function",
+   "params": {
+    "cep": {
+     "type": "cds.Integer64",
+     "@description": "O CEP (Código de Endereçamento Postal) é um sistema de códigos que visa racionalizar o processo de encaminhamento e entrega de correspondências através da divisão do país em regiões postais. ... Atualmente, o CEP é composto por oito dígitos, cinco de um lado e três de outro. Cada algarismo do CEP possui um significado.\n",
+     "@openapi.in": "path"
+    }
+   },
+   "@Common.Label": "CEP V2",
+   "@Core.Description": "Versão 2 do serviço de busca por CEP com múltiplos providers de fallback.",
+   "@openapi.path": "/cep/v2/{cep}",
+   "returns": {
+    "type": "Brasil.API_types.AddressV2"
+   }
+  },
+  "Brasil.API.cnpj_v1_": {
+   "kind": "function",
+   "params": {
+    "cnpj": {
+     "type": "cds.String",
+     "@description": "O Cadastro Nacional da Pessoa Jurídica é um número único que identifica uma pessoa jurídica e outros tipos de arranjo jurídico sem personalidade jurídica junto à Receita Federal.\n",
+     "@openapi.in": "path"
+    }
+   },
+   "@Common.Label": "CNPJ",
+   "@Core.Description": "Busca por CNPJ na API Minha Receita.",
+   "@openapi.path": "/cnpj/v1/{cnpj}",
+   "returns": {
+    "type": "Brasil.API_types.CNPJ"
+   }
+  },
+  "Brasil.API.cvm_corretoras_v1": {
+   "kind": "function",
+   "params": {},
+   "@Common.Label": "Corretoras",
+   "@Core.Description": "Retorna as corretoras nos arquivos da CVM.",
+   "@openapi.path": "/cvm/corretoras/v1",
+   "returns": {
+    "items": {
+     "type": "Brasil.API_types.Corretora"
+    }
+   }
+  },
+  "Brasil.API.cvm_corretoras_v1_": {
+   "kind": "function",
+   "params": {
+    "cnpj": {
+     "type": "cds.String",
+     "@description": "O Cadastro Nacional da Pessoa Jurídica é um número único que identifica uma pessoa jurídica e outros tipos de arranjo jurídico sem personalidade jurídica junto à Receita Federal.\n",
+     "@openapi.in": "path"
+    }
+   },
+   "@Common.Label": "Corretoras",
+   "@Core.Description": "Busca por corretoras nos arquivos da CVM.",
+   "@openapi.path": "/cvm/corretoras/v1/{cnpj}",
+   "returns": {
+    "type": "Brasil.API_types.Corretora"
+   }
+  },
+  "Brasil.API.cptec_v1_cidade": {
+   "kind": "function",
+   "params": {},
+   "@Common.Label": "CPTEC",
+   "@Core.Description": "Listar localidades",
+   "@Core.LongDescription": "Retorna listagem com todas as cidades junto a seus respectivos códigos presentes nos serviços da CPTEC.\nO Código destas cidades será utilizado para os serviços de meteorologia e a ondas (previsão oceânica) fornecido pelo centro.\nLeve em consideração que o WebService do CPTEC as vezes é instável, então se não encontrar uma determinada cidade na listagem completa, tente buscando por parte de seu nome no endpoint de busca.",
+   "@openapi.path": "/cptec/v1/cidade",
+   "returns": {
+    "@openapi.contentType": "application/json; charset=utf-8",
+    "items": {
+     "type": "Brasil.API_types.City"
+    }
+   }
+  },
+  "Brasil.API.cptec_v1_cidade_": {
+   "kind": "function",
+   "params": {
+    "cityName": {
+     "type": "cds.String",
+     "@Core.Example.$Type": "Core.PrimitiveExampleValue",
+     "@Core.Example.Value": "Chiforímpola",
+     "@description": "Nome ou parte do nome da cidade a ser buscada",
+     "@openapi.in": "path"
+    }
+   },
+   "@Common.Label": "CPTEC",
+   "@Core.Description": "Buscar localidades",
+   "@Core.LongDescription": "Retorna listagem com todas as cidades correspondentes ao termo pesquisado junto a seus respectivos códigos presentes nos serviços da CPTEC.\nO Código destas cidades será utilizado para os serviços de meteorologia e a ondas (previsão oceânica) fornecido pelo centro.",
+   "@openapi.path": "/cptec/v1/cidade/{cityName}",
+   "returns": {
+    "@openapi.contentType": "application/json; charset=utf-8",
+    "items": {
+     "type": "Brasil.API_types.City"
+    }
+   }
+  },
+  "Brasil.API.cptec_v1_clima_capital": {
+   "kind": "function",
+   "params": {},
+   "@Common.Label": "CPTEC",
+   "@Core.Description": "Condições atuais nas capitais",
+   "@Core.LongDescription": "Retorna condições meteorológicas atuais nas capitais do país, com base nas estações de solo de seu aeroporto.",
+   "@openapi.path": "/cptec/v1/clima/capital",
+   "returns": {
+    "@openapi.contentType": "application/json; charset=utf-8",
+    "items": {
+     "type": "Brasil.API_types.Currentcondicao"
+    }
+   }
+  },
+  "Brasil.API.cptec_v1_clima_aeroporto_": {
+   "kind": "function",
+   "params": {
+    "icaoCode": {
+     "type": "cds.String",
+     "@Core.Example.$Type": "Core.PrimitiveExampleValue",
+     "@Core.Example.Value": "SBGR",
+     "@description": "Código ICAO (4 dígitos) do aeroporto desejado",
+     "@openapi.in": "path"
+    }
+   },
+   "@Common.Label": "CPTEC",
+   "@Core.Description": "Condições atuais no aeroporto (/cptec/v1/clima/aeroporto/:icaoCode)",
+   "@Core.LongDescription": "Retorna condições meteorológicas atuais no aeroporto solicitado. Este endpoint utiliza o código ICAO (4 dígitos) do aeroporto.",
+   "@openapi.path": "/cptec/v1/clima/aeroporto/{icaoCode}",
+   "returns": {
+    "@openapi.contentType": "application/json; charset=utf-8",
+    "type": "Brasil.API_types.Currentcondicao"
+   }
+  },
+  "Brasil.API.cptec_v1_clima_previsao_": {
+   "kind": "function",
+   "params": {
+    "cityCode": {
+     "type": "cds.Integer",
+     "@Core.Example.$Type": "Core.PrimitiveExampleValue",
+     "@Core.Example.Value": 999,
+     "@description": "Código da cidade fornecido pelo endpoint /cidade",
+     "@openapi.in": "path"
+    }
+   },
+   "@Common.Label": "CPTEC",
+   "@Core.Description": "Previsão meteorológica para uma cidade",
+   "@Core.LongDescription": "Retorna Pervisão meteorológica para 1 dia na cidade informada.",
+   "@openapi.path": "/cptec/v1/clima/previsao/{cityCode}",
+   "returns": {
+    "@openapi.contentType": "application/json; charset=utf-8",
+    "type": "Brasil.API_types.ClimaPrediction"
+   }
+  },
+  "Brasil.API.cptec_v1_clima_previsao__": {
+   "kind": "function",
+   "params": {
+    "cityCode": {
+     "type": "cds.Integer",
+     "@Core.Example.$Type": "Core.PrimitiveExampleValue",
+     "@Core.Example.Value": 999,
+     "@description": "Código da cidade fornecido pelo endpoint /cidade",
+     "@openapi.in": "path"
+    },
+    "days": {
+     "type": "cds.Integer",
+     "@Core.Example.$Type": "Core.PrimitiveExampleValue",
+     "@Core.Example.Value": 5,
+     "@description": "Quantidade de dias desejado para a previsão",
+     "@openapi.in": "path"
+    }
+   },
+   "@Common.Label": "CPTEC",
+   "@Core.Description": "Previsão meteorológica para, até, 6 dias",
+   "@Core.LongDescription": "Retorna a previsão meteorológica para a cidade informada para um período de 1 até 6 dias.\nDevido a inconsistências encontradas nos retornos da CPTEC nossa API só consegue retornar com precisão o período máximo de 6 dias.",
+   "@openapi.path": "/cptec/v1/clima/previsao/{cityCode}/{days}",
+   "returns": {
+    "@openapi.contentType": "application/json; charset=utf-8",
+    "type": "Brasil.API_types.ClimaPrediction"
+   }
+  },
+  "Brasil.API.cptec_v1_ondas_": {
+   "kind": "function",
+   "params": {
+    "cityCode": {
+     "type": "cds.Integer",
+     "@Core.Example.$Type": "Core.PrimitiveExampleValue",
+     "@Core.Example.Value": 241,
+     "@description": "Código da cidade fornecido pelo endpoint /cidade",
+     "@openapi.in": "path"
+    }
+   },
+   "@Common.Label": "CPTEC",
+   "@Core.Description": "Previsão oceânica",
+   "@Core.LongDescription": "Retorna a previsão oceânica para a cidade informada para 1 dia",
+   "@openapi.path": "/cptec/v1/ondas/{cityCode}",
+   "returns": {
+    "@openapi.contentType": "application/json; charset=utf-8",
+    "type": "Brasil.API_types.OndasPrediction"
+   }
+  },
+  "Brasil.API.cptec_v1_ondas__": {
+   "kind": "function",
+   "params": {
+    "cityCode": {
+     "type": "cds.Integer",
+     "@Core.Example.$Type": "Core.PrimitiveExampleValue",
+     "@Core.Example.Value": 241,
+     "@description": "Código da cidade fornecido pelo endpoint /cidade",
+     "@openapi.in": "path"
+    },
+    "days": {
+     "type": "cds.Integer",
+     "@Core.Example.$Type": "Core.PrimitiveExampleValue",
+     "@Core.Example.Value": 2,
+     "@description": "Quantidade de dias desejada para a previsão",
+     "@openapi.in": "path"
+    }
+   },
+   "@Common.Label": "CPTEC",
+   "@Core.Description": "Previsão oceânica para, até, 6 dias",
+   "@Core.LongDescription": "Retorna a previsão oceânica para a cidade informada para um período de, até, 6 dias.",
+   "@openapi.path": "/cptec/v1/ondas/{cityCode}/{days}",
+   "returns": {
+    "@openapi.contentType": "application/json; charset=utf-8",
+    "type": "Brasil.API_types.OndasPrediction"
+   }
+  },
+  "Brasil.API.ddd_v1_": {
+   "kind": "function",
+   "params": {
+    "ddd": {
+     "type": "cds.Integer64",
+     "@description": "DDD significa Discagem Direta à Distância. É um sistema de ligação telefônica automática entre diferentes áreas urbanas nacionais. O DDD é um código constituído por 2 dígitos que identificam as principais cidades do país e devem ser adicionados ao nº de telefone, juntamente com o código da operadora.\n",
+     "@openapi.in": "path"
+    }
+   },
+   "@Common.Label": "DDD",
+   "@Core.Description": "Retorna estado e lista de cidades por DDD",
+   "@openapi.path": "/ddd/v1/{ddd}",
+   "returns": {
+    "type": "Brasil.API_types.DDDInfo"
+   }
+  },
+  "Brasil.API.fipe_marcas_v1_": {
+   "kind": "function",
+   "params": {
+    "tipoVeiculo": {
+     "type": "cds.String",
+     "@description": "Os tipos suportados são `caminhoes`, `carros` e `motos`. Quando o tipo não é específicado são buscada as marcas de todos os tipos de veículos\n",
+     "@openapi.in": "path"
+    },
+    "tabela_referencia": {
+     "type": "cds.Integer64",
+     "@description": "Código da tabela fipe de referência. Por padrão é utilizado o código da tabela fipe atual.\n",
+     "@openapi.in": "query"
+    }
+   },
+   "@Common.Label": "FIPE",
+   "@Core.Description": "Lista as marcas de veículos referente ao tipo de veículo",
+   "@openapi.path": "/fipe/marcas/v1/{tipoVeiculo}",
+   "returns": {
+    "items": {
+     "type": "Brasil.API_types.MarcaFIPE"
+    }
+   }
+  },
+  "Brasil.API.fipe_preco_v1_": {
+   "kind": "function",
+   "params": {
+    "codigoFipe": {
+     "type": "cds.String",
+     "@description": "Código fipe do veículo.\n",
+     "@openapi.in": "path"
+    },
+    "tabela_referencia": {
+     "type": "cds.Integer64",
+     "@description": "Código da tabela fipe de referência. Por padrão é utilizado o código da tabela fipe atual.\n",
+     "@openapi.in": "query"
+    }
+   },
+   "@Common.Label": "FIPE",
+   "@Core.Description": "Consulta o preço do veículo segundo a tabela fipe.",
+   "@openapi.path": "/fipe/preco/v1/{codigoFipe}",
+   "returns": {
+    "items": {
+     "type": "Brasil.API_types.VeiculoFIPE"
+    }
+   }
+  },
+  "Brasil.API.fipe_tabelas_v1": {
+   "kind": "function",
+   "params": {},
+   "@Common.Label": "FIPE",
+   "@Core.Description": "Lista as tabelas de referência existentes.",
+   "@openapi.path": "/fipe/tabelas/v1",
+   "returns": {
+    "items": {
+     "type": "Brasil.API_types.TabelaFIPE"
+    }
+   }
+  },
+  "Brasil.API.fipe_veiculos_v1__": {
+   "kind": "function",
+   "params": {
+    "tipoVeiculo": {
+     "type": "cds.String",
+     "@description": "Os tipos suportados são `caminhoes`, `carros` e `motos`.\n",
+     "@openapi.in": "path"
+    },
+    "codigoMarca": {
+     "type": "cds.Integer64",
+     "@description": "Código da marca do veiculo. Para consultar as marcas acesse a rota `/fipe/marcas/v1/`",
+     "@openapi.in": "path"
+    },
+    "tabela_referencia": {
+     "type": "cds.Integer64",
+     "@description": "Código da tabela fipe de referência. Por padrão é utilizado o código da tabela fipe atual.\n",
+     "@openapi.in": "query"
+    }
+   },
+   "@Common.Label": "FIPE",
+   "@Core.Description": "Lista os veículos de acordo com a marca e o tipo de veículo",
+   "@openapi.path": "/fipe/veiculos/v1/{tipoVeiculo}/{codigoMarca}",
+   "returns": {
+    "items": {
+     "type": "Brasil.API_types.VeiculoMarcaFIPE"
+    }
+   }
+  },
+  "Brasil.API.feriados_v1_": {
+   "kind": "function",
+   "params": {
+    "ano": {
+     "type": "cds.Integer64",
+     "@description": "Ano para calcular os feriados.\n",
+     "@openapi.in": "path"
+    }
+   },
+   "@Common.Label": "Feriados Nacionais",
+   "@Core.Description": "Lista os feriados nacionais de determinado ano.",
+   "@Core.LongDescription": "Calcula os feriados móveis baseados na Páscoa e adiciona os feriados fixos",
+   "@openapi.path": "/feriados/v1/{ano}",
+   "returns": {
+    "items": {
+     "type": "Brasil.API_types.Holiday"
+    }
+   }
+  },
+  "Brasil.API.ibge_municipios_v1__providers_dados_abertos_br_gov_wikipedia": {
+   "kind": "function",
+   "params": {
+    "siglaUF": {
+     "type": "cds.String",
+     "@description": "Sigla da unidade federativa, por exemplo SP, RJ, SC, etc.\n",
+     "@openapi.in": "path"
+    },
+    "providers": {
+     "type": "cds.String",
+     "@description": "Lista de provedores separados por vírgula.<br><strong>Provedores disponíveis:</strong> <ul><li>dados-abertos-br</li><li>gov</li><li>wikipedia</li></ul>",
+     "@openapi.in": "query"
+    }
+   },
+   "@Common.Label": "IBGE",
+   "@Core.Description": "Retorna os municípios da unidade federativa",
+   "@openapi.path": "/ibge/municipios/v1/{siglaUF}?providers=dados-abertos-br,gov,wikipedia",
+   "returns": {
+    "type": "cds.Boolean"
+   }
+  },
+  "Brasil.API.ibge_uf_v1": {
+   "kind": "function",
+   "params": {},
+   "@Common.Label": "IBGE",
+   "@Core.Description": "Retorna informações de todos estados do Brasil",
+   "@openapi.path": "/ibge/uf/v1",
+   "returns": {
+    "items": {
+     "type": "Brasil.API_types.State"
+    }
+   }
+  },
+  "Brasil.API.ibge_uf_v1_": {
+   "kind": "function",
+   "params": {},
+   "@Common.Label": "IBGE",
+   "@Core.Description": "Busca as informações de um estado a partir da sigla ou código",
+   "@openapi.path": "/ibge/uf/v1/{code}",
+   "returns": {
+    "type": "Brasil.API_types.State"
+   }
+  },
+  "Brasil.API.isbn_v1_": {
+   "kind": "function",
+   "params": {
+    "isbn": {
+     "type": "cds.String",
+     "@Core.Example.$Type": "Core.PrimitiveExampleValue",
+     "@Core.Example.Value": "9788545702870",
+     "@description": "O código informado pode conter traços (<code>-</code>) e ambos os formatos são aceitos, sendo eles o obsoleto de 10 dígitos e o atual de 13 dígitos.",
+     "@openapi.in": "path"
+    },
+    "providers": {
+     "items": {
+      "type": "Brasil.API.anonymous.type0"
+     },
+     "@description": "Lista de provedores separados por vírgula. Se não especificado, será realizado uma busca em todos os provedores e o que retornar as informações mais rapidamente será o escolhido.",
+     "@openapi.in": "query",
+     "@openapi.style": "pipeDelimited"
+    }
+   },
+   "@Common.Label": "ISBN",
+   "@Core.Description": "Informações sobre o livro a partir do ISBN",
+   "@openapi.path": "/isbn/v1/{isbn}",
+   "returns": {
+    "type": "Brasil.API_types.ISBNInfo"
+   }
+  },
+  "Brasil.API.ncm_v1": {
+   "kind": "function",
+   "params": {},
+   "@Common.Label": "NCM",
+   "@Core.Description": "Retorna informações de todos os NCMs",
+   "@openapi.path": "/ncm/v1",
+   "returns": {
+    "items": {
+     "type": "Brasil.API_types.NCM"
+    }
+   }
+  },
+  "Brasil.API.ncm_v1_search__": {
+   "kind": "function",
+   "params": {},
+   "@Common.Label": "NCM",
+   "@Core.Description": "Pesquisa por NCMs a partir  de um código ou descrição.",
+   "@openapi.path": "/ncm/v1?search={code}",
+   "returns": {
+    "items": {
+     "type": "Brasil.API_types.NCM"
+    }
+   }
+  },
+  "Brasil.API.ncm_v1_": {
+   "kind": "function",
+   "params": {},
+   "@Common.Label": "NCM",
+   "@Core.Description": "Busca as informações de um NCM a partir de um código",
+   "@openapi.path": "/ncm/v1/{code}",
+   "returns": {
+    "type": "Brasil.API_types.NCM"
+   }
+  },
+  "Brasil.API.pix_v1_participants": {
+   "kind": "function",
+   "params": {},
+   "@Common.Label": "PIX",
+   "@Core.Description": "Retorna informações de todos os participantes do PIX no dia atual ou anterior",
+   "@openapi.path": "/pix/v1/participants",
+   "returns": {
+    "items": {
+     "type": "Brasil.API_types.PIX_PARTICIPANTES"
+    }
+   }
+  },
+  "Brasil.API.registrobr_v1_": {
+   "kind": "function",
+   "params": {
+    "domain": {
+     "type": "cds.String",
+     "@description": "O domínio ou nome a ser avaliado",
+     "@openapi.in": "path"
+    }
+   },
+   "@Common.Label": "REGISTRO BR",
+   "@Core.Description": "Avalia o status de um dominio .br",
+   "@openapi.path": "/registrobr/v1/{domain}",
+   "returns": {
+    "type": "Brasil.API_types.REGISTROBR"
+   }
+  },
+  "Brasil.API.taxas_v1": {
+   "kind": "function",
+   "params": {},
+   "@Common.Label": "TAXAS",
+   "@Core.Description": "Retorna as taxas de juros e alguns índices oficiais do Brasil",
+   "@openapi.path": "/taxas/v1",
+   "returns": {
+    "items": {
+     "type": "Brasil.API_types.Taxa"
+    }
+   }
+  },
+  "Brasil.API.taxas_v1_": {
+   "kind": "function",
+   "params": {},
+   "@Common.Label": "TAXAS",
+   "@Core.Description": "Busca as informações de uma taxa a partir do seu nome/sigla",
+   "@openapi.path": "/taxas/v1/{sigla}",
+   "returns": {
+    "type": "Brasil.API_types.Taxa"
+   }
+  },
+  "Brasil.API_types.Bank": {
+   "@title": "Bank",
+   "elements": {
+    "ispb": {
+     "type": "cds.String"
+    },
+    "name": {
+     "type": "cds.String"
+    },
+    "code": {
+     "type": "cds.Integer"
+    },
+    "fullName": {
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.Moedas": {
+   "@title": "Moedas",
+   "elements": {
+    "simbolo": {
+     "type": "cds.String"
+    },
+    "nome": {
+     "type": "cds.String"
+    },
+    "tipo_moeda": {
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.CambioRetorno": {
+   "@title": "Cotação Cambio",
+   "elements": {
+    "moeda": {
+     "type": "cds.String"
+    },
+    "data": {
+     "@description": "Data da cotação, no formato YYYY-MM-DD. **OBS: Para finais de semana e feriados, a data retornada será o último dia útil disponível.**",
+     "type": "cds.Date"
+    },
+    "cotacoes": {
+     "@description": "Lista de cotações da moeda em relação ao Real",
+     "items": {
+      "type": "Brasil.API_types.Cotacao"
+     }
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.Cotacao": {
+   "@title": "Cotacao",
+   "elements": {
+    "paridade_compra": {
+     "@description": "Valor da paridade de compra da moeda em relação ao Real",
+     "type": "cds.Decimal"
+    },
+    "paridade_venda": {
+     "@description": "Valor da paridade de venda da moeda em relação ao Real",
+     "type": "cds.Decimal"
+    },
+    "cotacao_compra": {
+     "@description": "Valor da cotação de compra da moeda em relação ao Real",
+     "type": "cds.Decimal"
+    },
+    "cotacao_venda": {
+     "@description": "Valor da cotação de venda da moeda em relação ao Real",
+     "type": "cds.Decimal"
+    },
+    "data_hora_cotacao": {
+     "@description": "Data e hora da cotação, no formato YYYY-MM-DD HH:mm:ss.SSS",
+     "type": "cds.Timestamp"
+    },
+    "tipo_boletim": {
+     "@description": "Tipo de boletim da cotação",
+     "type": "cds.String",
+     "@assert.range": true,
+     "enum": {
+      "ABERTURA": {},
+      "INTERMEDIÁRIO": {},
+      "FECHAMENTO_PTAX": {
+       "val": "FECHAMENTO PTAX"
+      }
+     }
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.Coordinates": {
+   "@title": "Coordinates",
+   "elements": {
+    "longitude": {
+     "type": "cds.String"
+    },
+    "latitude": {
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.Location": {
+   "@title": "Location",
+   "elements": {
+    "type": {
+     "type": "cds.String",
+     "@assert.range": true,
+     "enum": {
+      "Point": {}
+     }
+    },
+    "coordinates": {
+     "type": "Brasil.API_types.Coordinates"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.AddressV2": {
+   "@title": "Address",
+   "elements": {
+    "cep": {
+     "type": "cds.String"
+    },
+    "state": {
+     "type": "cds.String"
+    },
+    "city": {
+     "type": "cds.String"
+    },
+    "neighborhood": {
+     "type": "cds.String"
+    },
+    "street": {
+     "type": "cds.String"
+    },
+    "service": {
+     "type": "cds.String"
+    },
+    "location": {
+     "type": "Brasil.API_types.Location"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.Address": {
+   "@title": "Address",
+   "elements": {
+    "cep": {
+     "type": "cds.String"
+    },
+    "state": {
+     "type": "cds.String"
+    },
+    "city": {
+     "type": "cds.String"
+    },
+    "neighborhood": {
+     "type": "cds.String"
+    },
+    "street": {
+     "type": "cds.String"
+    },
+    "service": {
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.CepError": {
+   "@title": "CepError.",
+   "elements": {
+    "name": {
+     "type": "cds.String"
+    },
+    "message": {
+     "type": "cds.String"
+    },
+    "type": {
+     "type": "cds.String"
+    },
+    "errors": {
+     "items": {
+      "type": "Brasil.API_types.Error"
+     }
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.Error": {
+   "@title": "Error",
+   "elements": {
+    "name": {
+     "type": "cds.String"
+    },
+    "message": {
+     "type": "cds.String"
+    },
+    "service": {
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.CNPJ": {
+   "@title": "CNPJ info",
+   "elements": {
+    "uf": {
+     "@description": "Sigla da unidade da federação em que se encontra o estabelecimento. Quando o estabelecimento estiver localizado no exterior, o campo será preenchido com 'EX'.",
+     "type": "cds.String"
+    },
+    "cep": {
+     "@description": "Código de endereçamento postal referente ao logradouro no qual o estabelecimento esta localizado",
+     "type": "cds.Integer"
+    },
+    "qsa": {
+     "@description": "Quadro de sócios e administradores",
+     "items": {
+      "elements": {
+       "pais": {
+        "@description": "Nome do país onde se localiza o sócio",
+        "type": "cds.String"
+       },
+       "nome_socio": {
+        "@description": "Nome do sócio pessoa física ou a razão social e/ou nome empresarial da pessoa jurídica e/ou nome do sócio/razão social do sócio estrangeiro",
+        "type": "cds.String"
+       },
+       "codigo_pais": {
+        "@description": "Código do país onde se localiza o sócio",
+        "type": "cds.Integer"
+       },
+       "faixa_etaria": {
+        "@description": "Faixa etária do sócio",
+        "type": "cds.String"
+       },
+       "cnpj_cpf_do_socio": {
+        "@description": "CPF ou CNPJ do sócio (sócio estrangeiro não tem esta informação)",
+        "type": "cds.String"
+       },
+       "qualificacao_socio": {
+        "@description": "Qualificação do sócio",
+        "type": "cds.String"
+       },
+       "codigo_faixa_etaria": {
+        "@description": "Código da faixa etária do sócio",
+        "type": "cds.Integer"
+       },
+       "data_entrada_sociedade": {
+        "type": "cds.Date"
+       },
+       "identificador_de_socio": {
+        "@description": "Identificador do sócio. Valores possíveis: 1 (PESSOA JURÍDICA), 2 (PESSOA FÍSICA), 3 (ESTRANGEIRO).",
+        "type": "cds.Integer"
+       },
+       "cpf_representante_legal": {
+        "type": "cds.String"
+       },
+       "nome_representante_legal": {
+        "type": "cds.String"
+       },
+       "codigo_qualificacao_socio": {
+        "type": "cds.Integer"
+       },
+       "qualificacao_representante_legal": {
+        "@description": "Qualificação do representante legal",
+        "type": "cds.String"
+       },
+       "codigo_qualificacao_representante_legal": {
+        "@description": "Código da qualificação do representante legal",
+        "type": "cds.Integer"
+       }
+      }
+     }
+    },
+    "cnpj": {
+     "@description": "Número Cadastro Nacional da Pessoa Jurídica",
+     "type": "cds.String"
+    },
+    "pais": {
+     "@description": "Nome do país onde se localiza o estabelecimento",
+     "type": "cds.String"
+    },
+    "email": {
+     "@description": "E-mail do contribuinte",
+     "type": "cds.String"
+    },
+    "porte": {
+     "@description": "Descrição do porte da empresa",
+     "type": "cds.String",
+     "@assert.range": true,
+     "enum": {
+      "NÃO_INFORMADO": {
+       "val": "NÃO INFORMADO"
+      },
+      "MICRO_EMPRESA": {
+       "val": "MICRO EMPRESA"
+      },
+      "EMPRESA_DE_PEQUENO_PORTE": {
+       "val": "EMPRESA DE PEQUENO PORTE"
+      },
+      "DEMAIS": {}
+     }
+    },
+    "bairro": {
+     "@description": "Bairro onde se localiza o estabelecimento",
+     "type": "cds.String"
+    },
+    "numero": {
+     "@description": "Número onde se localiza o estabelecimento. Quando não houver preenchimento do número haverá 'S/N'",
+     "type": "cds.String"
+    },
+    "ddd_fax": {
+     "@description": "Contém o ddd e o número do fax",
+     "type": "cds.String",
+     "@assert.format": "^[0-9]{2}[0-9]{8,9}$"
+    },
+    "municipio": {
+     "@description": "Nome do município de jurisdição onde se encontra o estabelecimento",
+     "type": "cds.String"
+    },
+    "logradouro": {
+     "@description": "Nome do logradouro onde se localiza o estabelecimento",
+     "type": "cds.String"
+    },
+    "cnae_fiscal": {
+     "@description": "Código da Atividade Econômica PRINCIPAL do estabelecimento",
+     "type": "cds.Integer"
+    },
+    "codigo_pais": {
+     "@description": "Código do país onde se localiza o estabelecimento",
+     "type": "cds.Integer"
+    },
+    "complemento": {
+     "@description": "Complemento do endereço de localização do estabelecimento",
+     "type": "cds.String"
+    },
+    "codigo_porte": {
+     "@description": "Código do porte da empresa. Valores possíveis: 0 (NÃO INFORMADO), 1 (MICRO EMPRESA), 3 (EMPRESA DE PEQUENO PORTE), 5 (DEMAIS).",
+     "type": "cds.Integer"
+    },
+    "razao_social": {
+     "@description": "Nome empresarial da pessoa jurídica",
+     "type": "cds.String"
+    },
+    "nome_fantasia": {
+     "@description": "Corresponde ao nome fantasia",
+     "type": "cds.String"
+    },
+    "capital_social": {
+     "@description": "Capital social da empresa",
+     "type": "cds.Integer"
+    },
+    "ddd_telefone_1": {
+     "@description": "Contém o ddd e o número do telefone 1",
+     "type": "cds.String",
+     "@assert.format": "^[0-9]{2}[0-9]{8,9}$"
+    },
+    "ddd_telefone_2": {
+     "@description": "Contém o ddd e o número do telefone 2",
+     "type": "cds.String",
+     "@assert.format": "^[0-9]{2}[0-9]{8,9}$"
+    },
+    "opcao_pelo_mei": {
+     "@description": "Indicador da existência da opção pelo MEI. Valores possíveis: true (SIM), false (NÃO), null (OUTROS).",
+     "type": "cds.Boolean"
+    },
+    "codigo_municipio": {
+     "@description": "Código do município de jurisdição onde se encontra o estabelecimento",
+     "type": "cds.Integer"
+    },
+    "cnaes_secundarios": {
+     "items": {
+      "elements": {
+       "codigo": {
+        "@description": "Código da Atividade Econômica SECUNDÁRIA do estabelecimento",
+        "type": "cds.Integer"
+       },
+       "descricao": {
+        "@description": "Descrição da Atividade Econômica SECUNDÁRIA do estabelecimento",
+        "type": "cds.String"
+       }
+      }
+     }
+    },
+    "natureza_juridica": {
+     "@description": "Natureza jurídica da empresa",
+     "type": "cds.String"
+    },
+    "regime_tributario": {
+     "items": {
+      "elements": {
+       "ano": {
+        "@description": "Ano de referência do regime tributário",
+        "type": "cds.Integer"
+       },
+       "cnpj_da_scp": {
+        "@description": "CNPJ da SCP",
+        "type": "cds.String"
+       },
+       "forma_de_tributacao": {
+        "@description": "Forma de tributação da empresa",
+        "type": "cds.String"
+       },
+       "quantidade_de_escrituracoes": {
+        "@description": "Quantidade de escrituração da empresa",
+        "type": "cds.Integer"
+       }
+      }
+     }
+    },
+    "situacao_especial": {
+     "@description": "Situação especial",
+     "type": "cds.String"
+    },
+    "opcao_pelo_simples": {
+     "@description": "Indicador da existência da opção pelo Simples. Valores possíveis: true (SIM), false (NÃO), null (OUTROS).",
+     "type": "cds.Boolean"
+    },
+    "situacao_cadastral": {
+     "@description": "Identifica a situação cadastral da empresa. Valores possíveis: 1 (NULA), 2 (ATIVA), 3 (SUSPENSA), 4 (INAPTA), 8 (BAIXADA).",
+     "type": "cds.Integer"
+    },
+    "data_opcao_pelo_mei": {
+     "@description": "Data de opção pelo MEI",
+     "type": "cds.Date"
+    },
+    "data_exclusao_do_mei": {
+     "@description": "Data de exclusão do MEI",
+     "type": "cds.Date"
+    },
+    "cnae_fiscal_descricao": {
+     "@description": "Descrição da Atividade Econômica PRINCIPAL do estabelecimento",
+     "type": "cds.String"
+    },
+    "codigo_municipio_ibge": {
+     "@description": "Código do IBGE do município de jurisdição onde se encontra o estabelecimento",
+     "type": "cds.Integer"
+    },
+    "data_inicio_atividade": {
+     "@description": "Data de início das atividades",
+     "type": "cds.Date"
+    },
+    "data_situacao_especial": {
+     "@description": "Data em que a empresa entrou em situação especial",
+     "type": "cds.Date"
+    },
+    "data_opcao_pelo_simples": {
+     "@description": "Data da opção pelo Simples",
+     "type": "cds.Date"
+    },
+    "data_situacao_cadastral": {
+     "@description": "Data da situação cadastral",
+     "type": "cds.Date"
+    },
+    "nome_cidade_exterior": {
+     "@description": "Nome da cidade no exterior",
+     "type": "cds.String"
+    },
+    "codigo_natureza_juridica": {
+     "@description": "Código da natureza jurídica",
+     "type": "cds.Integer"
+    },
+    "data_exclusao_do_simples": {
+     "@description": "Data da exclusão do Simples",
+     "type": "cds.Date"
+    },
+    "motivo_situacao_cadastral": {
+     "@description": "Código do motivo da situação cadastral.",
+     "type": "cds.Integer"
+    },
+    "ente_federativo_responsavel": {
+     "@description": "O ente federativo responsável é preenchido para os casos de órgãos e entidades do grupo de natureza jurídica 1XXX. Para as demais naturezas, este atributo fica em branco.",
+     "type": "cds.String"
+    },
+    "identificador_matriz_filial": {
+     "@description": "Identifica se o CNPJ pertence a uma matriz ou filial. Valores possíveis: 1 (MATRIZ), 2 (FILIAL).",
+     "type": "cds.Integer"
+    },
+    "qualificacao_do_responsavel": {
+     "@description": "Código de qualificação da pessoa física responsável pela empresa",
+     "type": "cds.Integer"
+    },
+    "descricao_situacao_cadastral": {
+     "@description": "Descrição textual da situação cadastral da empresa. Valores possíveis: 'NULA', 'ATIVA', 'SUSPENSA', 'INAPTA', 'BAIXADA'.",
+     "type": "cds.String",
+     "@assert.range": true,
+     "enum": {
+      "NULA": {},
+      "ATIVA": {},
+      "SUSPENSA": {},
+      "INAPTA": {},
+      "BAIXADA": {}
+     }
+    },
+    "descricao_tipo_de_logradouro": {
+     "@description": "Descrição do tipo de logradouro",
+     "type": "cds.String"
+    },
+    "descricao_motivo_situacao_cadastral": {
+     "@description": "Descrição do motivo da situação cadastral",
+     "type": "cds.String"
+    },
+    "descricao_matriz_filial": {
+     "@description": "Descrição textual do identificador de matriz ou filial. Valores possíveis: 'MATRIZ' ou 'FILIAL'.",
+     "type": "cds.String",
+     "@assert.range": true,
+     "enum": {
+      "MATRIZ": {},
+      "FILIAL": {}
+     }
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.Corretora": {
+   "@title": "Corretora",
+   "elements": {
+    "cnpj": {
+     "type": "cds.String"
+    },
+    "nome_social": {
+     "type": "cds.String"
+    },
+    "nome_comercial": {
+     "type": "cds.String"
+    },
+    "bairro": {
+     "type": "cds.String"
+    },
+    "cep": {
+     "type": "cds.String"
+    },
+    "codigo_cvm": {
+     "type": "cds.String"
+    },
+    "complemento": {
+     "type": "cds.String"
+    },
+    "data_inicio_situacao": {
+     "type": "cds.String"
+    },
+    "data_patrimonio_liquido": {
+     "type": "cds.String"
+    },
+    "data_registro": {
+     "type": "cds.String"
+    },
+    "email": {
+     "type": "cds.String"
+    },
+    "logradouro": {
+     "type": "cds.String"
+    },
+    "municipio": {
+     "type": "cds.String"
+    },
+    "pais": {
+     "type": "cds.String"
+    },
+    "telefone": {
+     "type": "cds.String"
+    },
+    "uf": {
+     "type": "cds.String"
+    },
+    "valor_patrimonio_liquido": {
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.City": {
+   "@title": "City",
+   "elements": {
+    "nome": {
+     "type": "cds.String"
+    },
+    "estado": {
+     "type": "cds.String"
+    },
+    "id": {
+     "type": "cds.Integer"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.Currentcondicao": {
+   "@title": "Currentcondicao",
+   "elements": {
+    "codigo_icao": {
+     "@description": "Código ICAO do aeroporto",
+     "type": "cds.String"
+    },
+    "atualizado_em": {
+     "@description": "Data de última atualização em formato ISO.",
+     "type": "cds.String"
+    },
+    "pressao_atmosferica": {
+     "@description": "Pressão atmosférica medida na estação meteorológica do aeroporto expressa em hPa (Hectopascal). ",
+     "type": "cds.Integer"
+    },
+    "visibilidade": {
+     "@description": "Condição atual de visibilidade em metros.",
+     "type": "cds.String"
+    },
+    "vento": {
+     "@description": "Intensidade do vendo em km/h.",
+     "type": "cds.Integer"
+    },
+    "direcao_vento": {
+     "@description": "Direção do vento em graus (de 0° a 360°",
+     "type": "cds.Integer"
+    },
+    "umidade": {
+     "@description": "Umidade relativa do ar em porcentagem.",
+     "type": "cds.Integer"
+    },
+    "condicao": {
+     "@description": "Código da condição meteorológica",
+     "type": "cds.String"
+    },
+    "condicao_desc": {
+     "@description": "Texto descritivo para a condição meteorológica.",
+     "type": "cds.String"
+    },
+    "temp": {
+     "@description": "Temperatura (em graus celsius)",
+     "type": "common.JSON",
+     "@openapi.schema": "{\"type\":\"float\"}"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.ClimaPrediction": {
+   "@title": "ClimaPrediction",
+   "elements": {
+    "cidade": {
+     "type": "cds.String"
+    },
+    "estado": {
+     "type": "cds.String"
+    },
+    "atualizado_em": {
+     "type": "cds.String"
+    },
+    "clima": {
+     "@description": "Lista com condições climáticas dia a dia",
+     "items": {
+      "type": "Brasil.API_types.Clima"
+     }
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.Clima": {
+   "@title": "Clima",
+   "elements": {
+    "data": {
+     "@description": "Data em formato ISO",
+     "type": "cds.String"
+    },
+    "condicao": {
+     "@description": "Código da condição meteorológica",
+     "type": "cds.String"
+    },
+    "min": {
+     "@description": "Temperatura mínima (em graus celsius) prevista.",
+     "type": "cds.Integer"
+    },
+    "max": {
+     "@description": "Temperatura máxima (em graus celsius) prevista.",
+     "type": "cds.Integer"
+    },
+    "indice_uv": {
+     "@description": "O IUV representa o valor máximo diário da radiação ultravioleta, isto é, no período referente ao meio-dia solar, o horário de máxima intensidade de radiação solar.",
+     "type": "common.JSON",
+     "@openapi.schema": "{\"type\":\"float\"}"
+    },
+    "condicao_desc": {
+     "@description": "Texto descritivo para a condição meteorológica.",
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.OndasPrediction": {
+   "@title": "OndasPrediction",
+   "elements": {
+    "cidade": {
+     "type": "cds.String"
+    },
+    "estado": {
+     "type": "cds.String"
+    },
+    "atualizado_em": {
+     "@description": "Data no formato ISO",
+     "type": "cds.String"
+    },
+    "ondas": {
+     "items": {
+      "type": "Brasil.API_types.ondasdata"
+     }
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.ondasdata": {
+   "@title": "ondasdata",
+   "elements": {
+    "data": {
+     "type": "cds.String"
+    },
+    "ondas_data": {
+     "items": {
+      "type": "Brasil.API_types.ondas"
+     }
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.ondas": {
+   "@title": "ondas",
+   "elements": {
+    "vento": {
+     "@description": "Velocidade do vento em km/h.",
+     "type": "common.JSON",
+     "@openapi.schema": "{\"type\":\"float\"}"
+    },
+    "direcao_vento": {
+     "@description": "Sigla do ponto cardeal, colateral ou subcolateral que indica a direção do vento.",
+     "type": "cds.String"
+    },
+    "altura_onda": {
+     "@description": "Altura em metros das ondas no município ou localidade litorâneo(a) selecionado(a) no determinado período do dia, representada por um número decimal.",
+     "type": "common.JSON",
+     "@openapi.schema": "{\"type\":\"float\"}"
+    },
+    "direcao_onda": {
+     "@description": "Sigla do ponto cardeal, colateral ou subcolateral que indica a direção das ondas.",
+     "type": "cds.String"
+    },
+    "agitacao": {
+     "@description": "Texto que indica a agitação do mar.",
+     "type": "cds.String"
+    },
+    "hora": {
+     "@description": "Hora do dia para a condição prevista",
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.DDDInfo": {
+   "@title": "DDD Info",
+   "elements": {
+    "state": {
+     "type": "cds.String"
+    },
+    "cities": {
+     "items": {
+      "type": "Brasil.API.anonymous.type1"
+     }
+    },
+    "nome": {
+     "type": "cds.String"
+    },
+    "regiao": {
+     "type": "Brasil.API_types.Region"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.ErrorMessage": {
+   "@title": "ErrorMessage",
+   "elements": {
+    "message": {
+     "type": "cds.String"
+    },
+    "name": {
+     "type": "cds.String"
+    },
+    "type": {
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.TabelaFIPE": {
+   "@title": "Tabelas de referência FIPE",
+   "elements": {
+    "codigo": {
+     "type": "cds.Integer"
+    },
+    "mes": {
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.MarcaFIPE": {
+   "@title": "Marcas FIPE",
+   "elements": {
+    "nome": {
+     "type": "cds.String"
+    },
+    "valor": {
+     "type": "cds.Integer"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.VeiculoFIPE": {
+   "@title": "Veículo FIPE",
+   "elements": {
+    "valor": {
+     "type": "cds.String"
+    },
+    "marca": {
+     "type": "cds.String"
+    },
+    "modelo": {
+     "type": "cds.String"
+    },
+    "anoModelo": {
+     "type": "cds.Integer"
+    },
+    "combustivel": {
+     "type": "cds.String"
+    },
+    "codigoFipe": {
+     "type": "cds.String"
+    },
+    "mesReferencia": {
+     "type": "cds.String"
+    },
+    "tipoVeiculo": {
+     "type": "cds.Integer"
+    },
+    "siglaCombustivel": {
+     "type": "cds.String"
+    },
+    "dataConsulta": {
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.VeiculoMarcaFIPE": {
+   "@title": "Veiculos FIPE",
+   "elements": {
+    "modelo": {
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.Holiday": {
+   "@title": "Holiday",
+   "elements": {
+    "date": {
+     "type": "cds.String"
+    },
+    "type": {
+     "type": "cds.String"
+    },
+    "name": {
+     "type": "cds.String"
+    },
+    "fullName": {
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.State": {
+   "@title": "State",
+   "elements": {
+    "id": {
+     "type": "cds.Integer"
+    },
+    "sigla": {
+     "type": "cds.String"
+    },
+    "nome": {
+     "type": "cds.String"
+    },
+    "regiao": {
+     "type": "Brasil.API_types.Region"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.Region": {
+   "@title": "Region",
+   "elements": {
+    "id": {
+     "type": "cds.Integer"
+    },
+    "sigla": {
+     "type": "cds.String"
+    },
+    "nome": {
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.Dimensions": {
+   "@title": "Dimensions",
+   "elements": {
+    "width": {
+     "type": "common.JSON",
+     "@openapi.schema": "{\"type\":\"float\"}"
+    },
+    "height": {
+     "type": "common.JSON",
+     "@openapi.schema": "{\"type\":\"float\"}"
+    },
+    "unit": {
+     "type": "cds.String",
+     "@assert.range": true,
+     "enum": {
+      "CENTIMETER": {},
+      "INCH": {}
+     }
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.Price": {
+   "@title": "Price",
+   "elements": {
+    "currency": {
+     "@description": "Código ISO 4217",
+     "type": "cds.String"
+    },
+    "amount": {
+     "type": "common.JSON",
+     "@openapi.schema": "{\"type\":\"float\"}"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.ISBNInfo": {
+   "@title": "ISBN Info",
+   "elements": {
+    "isbn": {
+     "type": "cds.String"
+    },
+    "title": {
+     "type": "cds.String"
+    },
+    "subtitle": {
+     "type": "cds.String"
+    },
+    "authors": {
+     "items": {
+      "type": "cds.String"
+     }
+    },
+    "publisher": {
+     "type": "cds.String"
+    },
+    "synopsis": {
+     "type": "cds.String"
+    },
+    "dimensions": {
+     "type": "Brasil.API_types.Dimensions"
+    },
+    "year": {
+     "type": "cds.Integer"
+    },
+    "format": {
+     "type": "cds.String",
+     "@assert.range": true,
+     "enum": {
+      "PHYSICAL": {},
+      "DIGITAL": {}
+     }
+    },
+    "page_count": {
+     "type": "cds.Integer"
+    },
+    "subjects": {
+     "items": {
+      "type": "cds.String"
+     }
+    },
+    "location": {
+     "type": "cds.String"
+    },
+    "retail_price": {
+     "type": "Brasil.API_types.Price"
+    },
+    "cover_url": {
+     "type": "cds.String"
+    },
+    "provider": {
+     "type": "cds.String",
+     "@assert.range": true,
+     "enum": {
+      "cbl": {},
+      "mercado_editorial": {
+       "val": "mercado-editorial"
+      },
+      "open_library": {
+       "val": "open-library"
+      },
+      "google_books": {
+       "val": "google-books"
+      }
+     }
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.NCM": {
+   "@title": "NCM",
+   "elements": {
+    "codigo": {
+     "type": "cds.String"
+    },
+    "descricao": {
+     "type": "cds.String"
+    },
+    "data_inicio": {
+     "type": "cds.String"
+    },
+    "data_fim": {
+     "type": "cds.String"
+    },
+    "tipo_ato": {
+     "type": "cds.String"
+    },
+    "numero_ato": {
+     "type": "cds.String"
+    },
+    "ano": {
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.PIX_PARTICIPANTES": {
+   "@title": "Pix Participantes",
+   "elements": {
+    "ispb": {
+     "@description": "ISPB",
+     "type": "cds.String"
+    },
+    "nome": {
+     "@description": "Nome do participante",
+     "type": "cds.String"
+    },
+    "nome_reduzido": {
+     "@description": "Nome reduzido do participante",
+     "type": "cds.String"
+    },
+    "modalidade_participacao": {
+     "@description": "Modalidade de Participação",
+     "type": "cds.String"
+    },
+    "tipo_participacao": {
+     "@description": "Tipo de participante",
+     "type": "cds.String"
+    },
+    "inicio_operacao": {
+     "@description": "Date de inicio da operação",
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.REGISTROBR": {
+   "@title": "Avaliação de domínio .br",
+   "elements": {
+    "status_code": {
+     "@description": "0 - domínio disponível | 1 - disponível com tickets concorrentes | 2 - já registrado | 3 - indisponível | 4 - inválido | 5 - aguardando processo de liberação | 6 - disponível no processo de liberação em andamento | 7 - disponível no processo de liberação em andamento com tickets concorrentes | 8 - erro | 9 - domínio em processo de liberação competitivo | 10 - desconhecido",
+     "type": "cds.Integer"
+    },
+    "status": {
+     "@description": "AVAILABLE | AVAILABLE_WITH_TICKET | REGISTERED | UNAVAILABLE | INVALID_QUERY | RELEASE_WAITING | RELEASE_IN_PROGRESS | RELEASE_IN_PROGRESS_WITH_TICKETS | ERROR | DOMAIN_PROCESS_RELEASE | UNKNOW",
+     "type": "cds.String"
+    },
+    "fqdn": {
+     "@description": "Domínio pesquisado",
+     "type": "cds.String"
+    },
+    "suggestions": {
+     "@description": "Caso o dominio esteja indisponivel o registro podera sugerir extensões disponíveis para o registro",
+     "type": "common.JSON",
+     "@openapi.schema": "{\"type\":\"array\"}"
+    },
+    "hosts": {
+     "@description": "CDN's de um domínio publicado",
+     "type": "common.JSON",
+     "@openapi.schema": "{\"type\":\"array\"}"
+    },
+    "publication_status": {
+     "@description": "Status de um dominio registrado",
+     "type": "cds.String",
+     "@openapi.name": "publication-status"
+    },
+    "expires_at": {
+     "@description": "Vencimento do domínio",
+     "type": "common.JSON",
+     "@openapi.schema": "{\"type\":\"Date\"}",
+     "@openapi.name": "expires-at"
+    },
+    "reasons": {
+     "@description": "Justificativas da indisponibilidade de registro ainda não registrado",
+     "type": "common.JSON",
+     "@openapi.schema": "{\"type\":\"array\"}"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.REGISTROBR_BAD_REQUEST": {
+   "@title": "Erro ao avaliar o domínio",
+   "elements": {
+    "message": {
+     "@description": "Mensagem de erro",
+     "type": "cds.String"
+    },
+    "type": {
+     "@description": "Tipo do erro",
+     "type": "cds.String"
+    },
+    "name": {
+     "@description": "Nome do erro",
+     "type": "cds.String"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API_types.Taxa": {
+   "@title": "Taxa",
+   "elements": {
+    "nome": {
+     "type": "cds.String"
+    },
+    "valor": {
+     "type": "common.JSON",
+     "@openapi.schema": "{\"type\":\"decimal\",\"format\":\"double\"}"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API.anonymous.type0": {
+   "type": "cds.String",
+   "@assert.range": true,
+   "enum": {
+    "cbl": {},
+    "mercado_editorial": {
+     "val": "mercado-editorial"
+    },
+    "open_library": {
+     "val": "open-library"
+    },
+    "google_books": {
+     "val": "google-books"
+    }
+   },
+   "kind": "type"
+  },
+  "Brasil.API.anonymous.type1": {
+   "type": "common.JSON",
+   "@openapi.schema": "{\"0\":\"s\",\"1\":\"t\",\"2\":\"r\",\"3\":\"i\",\"4\":\"n\",\"5\":\"g\"}",
+   "kind": "type"
+  },
+  "common.JSON": {
+   "kind": "type",
+   "type": "cds.LargeString"
+  }
+ },
+ "meta": {
+  "creator": "cds-import-openapi"
+ }
+}
