@@ -22,7 +22,7 @@
   },
   "cds": {
     "i18n": {
-      "default": "pt"
+      "default_language": "pt"
     },
     "server": {
       "shutdown_on_uncaught_errors": false,
