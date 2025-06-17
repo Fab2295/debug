@@ -104,9 +104,10 @@ export class CadastroPessoas extends cds.ApplicationService {
       } catch (error) {
         ERROR(`Erro ao consultar CEP ${cep}: ${error.message}`);
         ERROR(error);
-        req.reject(
+        req.error(
           error.statusCode || 500,
-          error.message || cds.i18n.messages.at("ERROR_API_CEP", req.locale)
+          cds.i18n.messages.at("ERROR_API_CEP", req.locale, [cep]) ||
+            error.message
         );
       }
     }
